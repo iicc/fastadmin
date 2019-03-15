@@ -7,6 +7,13 @@ define(['jquery', 'bootstrap', 'plupload', 'template'], function ($, undefined, 
             previewtpl: '<li class="col-xs-3"><a href="<%=fullurl%>" data-url="<%=url%>" target="_blank" class="thumbnail"><img src="<%=fullurl%>" onerror="this.src=\'https://tool.fastadmin.net/icon/\'+\'<%=fullurl%>\'.split(\'.\').pop()+\'.png\';this.onerror=null;" class="img-responsive"></a><a href="javascript:;" class="btn btn-danger btn-xs btn-trash"><i class="fa fa-trash"></i></a></li>',
         },
         events: {
+            onInit: function (up) {
+                //修复少数安卓浏览器无法上传图片的Bug
+                var input = $("input[type=file]", $(up.settings.button).next());
+                if (input && input.prop("accept").match(/image\/jpeg/)) {
+                    input.prop("accept", "image/jpg," + input.prop("accept"));
+                }
+            },
             //初始化完成
             onPostInit: function (up) {
 
@@ -199,6 +206,7 @@ define(['jquery', 'bootstrap', 'plupload', 'template'], function ($, undefined, 
                         container: $(this).parent().get(0), //取按钮的上级元素
                         flash_swf_url: '/assets/libs/plupload/js/Moxie.swf',
                         silverlight_xap_url: '/assets/libs/plupload/js/Moxie.xap',
+                        drop_element: [id, $(this).data("input-id")],
                         filters: {
                             max_file_size: maxsize,
                             mime_types: mimetype,
